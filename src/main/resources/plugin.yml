@@ -1,0 +1,11 @@
+name: ClansAPI
+version: '${project.version}'
+main: me.vineer.clansapi.ClansAPI
+api-version: 1.16
+authors: [ Vineer ]
+softdepend:
+  - PlayerManager
+commands:
+  clan:
+    description: clans
+    usage: /<command>
