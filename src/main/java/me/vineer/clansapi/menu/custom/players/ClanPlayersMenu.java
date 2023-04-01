@@ -2,7 +2,7 @@ package me.vineer.clansapi.menu.custom.players;
 
 import me.vineer.clansapi.ClansAPI;
 import me.vineer.clansapi.PlayerMenuUtility;
-import me.vineer.clansapi.clans.player.ClanPlayer;
+import me.vineer.clansapi.clan.player.ClanPlayer;
 import me.vineer.clansapi.database.ClansController;
 import me.vineer.clansapi.heads.NickController;
 import me.vineer.clansapi.menu.PaginatedMenu;

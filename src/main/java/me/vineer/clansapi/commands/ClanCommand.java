@@ -3,22 +3,30 @@ package me.vineer.clansapi.commands;
 import me.vineer.clansapi.ClansAPI;
 import me.vineer.clansapi.Experience;
 import me.vineer.clansapi.PlayerMenuUtility;
-import me.vineer.clansapi.clans.Clan;
-import me.vineer.clansapi.clans.player.ClanPlayer;
-import me.vineer.clansapi.clans.ranks.ClanRank;
+import me.vineer.clansapi.bossBar.BossBarCreator;
+import me.vineer.clansapi.clan.Clan;
+import me.vineer.clansapi.clan.player.ClanPlayer;
+import me.vineer.clansapi.clan.ranks.ClanRank;
+import me.vineer.clansapi.clan.war.War;
+import me.vineer.clansapi.clan.war.WarState;
+import me.vineer.clansapi.clan.war.teams.ClanTeam;
+import me.vineer.clansapi.commands.admin.ClanAdminCommand;
+import me.vineer.clansapi.config.main.MainConfig;
 import me.vineer.clansapi.database.ClansController;
 import me.vineer.clansapi.heads.NickController;
 import me.vineer.clansapi.menu.custom.ClanMenu;
 import me.vineer.clansapi.menu.custom.players.ClanPlayersMenu;
 import me.vineer.clansapi.menu.custom.requests.ClanRequestsMenu;
-import me.vineer.economyapi.money.Balance;
-import net.kyori.adventure.audience.Audience;
+import net.ess3.api.MaxMoneyException;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.math.BigDecimal;
 
 public class ClanCommand implements CommandExecutor {
     @Override
@@ -28,7 +36,7 @@ public class ClanCommand implements CommandExecutor {
                 if(ClansController.isPlayer(sender.getName())) {
                     sender.sendMessage(ChatColor.YELLOW + "[CA] " + ChatColor.RED + "Вы не можете создать клан т.к. вы находитесь в клане или у вас уже есть клан.");
                 } else {
-                    Clan clan = ClansController.createClan(args[1], args[2], sender.getName());
+                    ClansController.createClan(args[1], args[2], sender.getName());
                     sender.sendMessage(ChatColor.YELLOW + "[CA] " + ChatColor.GREEN + "Клан " + ChatColor.GOLD + args[1] + ChatColor.GREEN + " был успешно создан!");
                     NickController.changeClan(sender.getName(), args[2]);
                 }
@@ -102,8 +110,7 @@ public class ClanCommand implements CommandExecutor {
                     player.sendMessage(ChatColor.YELLOW + "[CA] " + ChatColor.RED + "У клана не установлена точка дома!");
                     return true;
                 }
-                Audience audience = ClansAPI.getPlugin().adventure().sender(sender);
-                ClansAPI.teleport(audience, player, location);
+                ClansAPI.teleport(player, location);
             } else if (args[0].equals("sethome")) {
                 ClanPlayer p = ClansController.getPlayer(sender.getName());
                 Player player = ((Player) sender);
@@ -114,7 +121,77 @@ public class ClanCommand implements CommandExecutor {
                 } else {
                     player.sendMessage(ChatColor.YELLOW + "[CA] " + ChatColor.RED + "У вас недостаточно прав для установки клановой точки дома!");
                 }
-
+            } else if (args[0].equals("startwar")) {
+                if(!War.enabled) {
+                    sender.sendMessage(ChatColor.YELLOW + "[CA] " + ChatColor.RED + "Сейчас клановые битвы не включены.");
+                    return true;
+                }
+                ClanPlayer player = ClansController.getPlayer(sender.getName());
+                if (player == null) {
+                    sender.sendMessage(ChatColor.YELLOW + "[CA] " + ChatColor.RED + "Вы не состоите в клане!");
+                    return true;
+                }
+                if(player.getRank() != ClanRank.PRESIDENT) {
+                    sender.sendMessage(ChatColor.YELLOW + "[CA] " + ChatColor.RED + "Вы не можете начинать битву клана!");
+                    return true;
+                }
+                if (War.getTeam(ClansController.getClanOfPlayer(sender.getName())) != null) {
+                    sender.sendMessage(ChatColor.YELLOW + "[CA] " + ChatColor.RED + "Вы уже находитесь в подготовке к битве!");
+                    return true;
+                }
+                if(War.state != null && War.state != WarState.FIRST_INIT) {
+                    sender.sendMessage(ChatColor.YELLOW + "[CA] " + ChatColor.RED + "Набор на клановую битву закончился! Дождитесь следующей для участия.");
+                    return true;
+                }
+                War.addTeam(new ClanTeam(ClansController.getClanOfPlayer(sender.getName())));
+                Bukkit.getOnlinePlayers().forEach(p -> {
+                    ClanPlayer pl = ClansController.getPlayer(p.getName());
+                    if(pl != null) {
+                        if(!War.started) {
+                            if(pl.getRank() != ClanRank.PRESIDENT) {
+                                p.sendMessage(ChatColor.YELLOW + "[CA] " + ChatColor.WHITE + "Клан " + ChatColor.GREEN + ClansController.getClanOfPlayer(sender.getName()) + ChatColor.WHITE + " начинает Клановые Войны! Если глава вашего клана подключится к битве, то у вас будет шанс поучавствовать в битве!");
+                            }
+                            else {
+                                p.sendMessage(ChatColor.YELLOW + "[CA] " + ChatColor.WHITE + "Клан " + ChatColor.GREEN + ClansController.getClanOfPlayer(sender.getName()) + ChatColor.WHITE + " начинает Клановые Войны! Хочешь сразиться против кланов? Тогда собирай свою группу, прописав команду:" + ChatColor.GREEN + " /clan startwar" + ChatColor.WHITE + " и у вас будет время на подготовку в размере: " + ClansAPI.getTextFromTick(MainConfig.data.clanwarSecondDelay) + " для начала!");
+                            }
+                            if(!ClansController.getClanOfPlayer(pl.getPlayerName()).equals(ClansController.getClanOfPlayer(sender.getName()))) {
+                                BossBarCreator.generateWarBossBar(p);
+                            }
+                        }
+                        else {
+                            p.sendMessage(ChatColor.YELLOW + "[CA] " + ChatColor.WHITE + "Клан " + ChatColor.GREEN + ClansController.getClanOfPlayer(sender.getName()) + ChatColor.WHITE + " подключается к клановым войнам!");
+                        }
+                    }
+                });
+                ClansController.getClan(ClansController.getClanOfPlayer(sender.getName())).getPlayers().forEach(clanPlayer -> {
+                    Player clanplayer = Bukkit.getPlayer(clanPlayer.getPlayerName());
+                    if(clanplayer != null && clanPlayer.getRank() != ClanRank.PRESIDENT) clanplayer.sendMessage(ChatColor.YELLOW + "[CA] " + ChatColor.WHITE + "Ваш клан начал сбор на битву кланов, если желаете, подготовтесь к битве и отправьте заявку на битву используя команду " + ChatColor.GREEN + "/waraccept");
+                    if(clanplayer != null && !War.started) {
+                        BossBarCreator.generateWarBossBar(clanplayer);
+                    }
+                });
+                if(!War.started) {
+                    War.started = true;
+                    War.startMainTimer();
+                }
+            } else if (args[0].equals("waraccept")) {
+                if(!War.enabled) {
+                    sender.sendMessage(ChatColor.YELLOW + "[CA] " + ChatColor.RED + "Сейчас клановые битвы не включены.");
+                    return true;
+                }
+                if(!War.started) {
+                    sender.sendMessage(ChatColor.YELLOW + "[CA] " + ChatColor.RED + "Сейчас клановые битвы не проходят.");
+                    return true;
+                }
+                ClanPlayer player = ClansController.getPlayer(sender.getName());
+                if(player == null) {
+                    sender.sendMessage(ChatColor.YELLOW + "[CA] " + ChatColor.RED + "Вы не состоите в клане.");
+                    return true;
+                }
+                if(War.state.ordinal() > WarState.FIRST_INIT.ordinal()) {
+                    sender.sendMessage(ChatColor.YELLOW + "[CA] " + ChatColor.RED + "Набор на клановую битву закончился! Дождитесь следующей битвы для участия.");
+                    return true;
+                }
             }
         } else if (args.length == 4) {
             if(args[0].equals("bank")) {
@@ -148,20 +225,25 @@ public class ClanCommand implements CommandExecutor {
                     }
                 } else if (args[1].equals("$")) {
                     if(args[2].equals("add")) {
-                        Balance balance = Balance.getPlayerBalance(sender.getName());
-                        if(balance.getMoney() < amount) {
+                        BigDecimal balance = ClansAPI.essentials.getUser(sender.getName()).getMoney();
+                        if(balance.compareTo(BigDecimal.valueOf(amount)) < 0) {
                             sender.sendMessage(ChatColor.YELLOW + "[CA] " + ChatColor.RED + "У вас недостаточно денег.");
                             return true;
                         }
                         clan.addMoney(amount);
-                        Balance.changePlayerBalance(sender.getName(), -amount,0);
+                        ClansAPI.essentials.getUser(sender.getName()).takeMoney(BigDecimal.valueOf(amount));
                     } else if (args[2].equals("withdraw")) {
                         if(clan.getClanBalance() < amount) {
                             sender.sendMessage(ChatColor.YELLOW + "[CA] " + ChatColor.RED + "В клане недостаточно денег.");
                             return true;
                         }
                         clan.removeMoney(amount);
-                        Balance.changePlayerBalance(sender.getName(), amount,0);
+                        try {
+                            ClansAPI.essentials.getUser(sender.getName()).giveMoney(BigDecimal.valueOf(amount));
+                        } catch (MaxMoneyException e) {
+                            clan.addMoney(amount);
+                            sender.sendMessage(ChatColor.YELLOW + "[CA] " + ChatColor.RED + "У вас лимит денег!");
+                        }
                     }
                 }
             }
@@ -172,6 +254,7 @@ public class ClanCommand implements CommandExecutor {
             }
             new ClanMenu(ClansAPI.getPlayerMenuUtility((Player) sender)).open();
         }
-        return true;
+        if(args.length > 0 && args[0].equals("admin") && sender.isOp()) return ClanAdminCommand.onCommand(sender, command, label, args);
+        else return true;
     }
 }

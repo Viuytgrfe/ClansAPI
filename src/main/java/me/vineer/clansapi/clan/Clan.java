@@ -1,10 +1,8 @@
-package me.vineer.clansapi.clans;
+package me.vineer.clansapi.clan;
 
-import com.sun.tools.javac.util.Pair;
-import me.vineer.clansapi.clans.player.ClanPlayer;
-import me.vineer.clansapi.clans.ranks.ClanRank;
+import me.vineer.clansapi.clan.player.ClanPlayer;
+import me.vineer.clansapi.clan.ranks.ClanRank;
 import me.vineer.clansapi.database.ClansController;
-import me.vineer.economyapi.database.Database;
 import org.bukkit.Location;
 
 import java.util.ArrayList;

@@ -1,7 +1,7 @@
-package me.vineer.clansapi.tabComplaters;
+package me.vineer.clansapi.tabCompleters;
 
-import me.vineer.clansapi.clans.player.ClanPlayer;
-import me.vineer.clansapi.clans.ranks.ClanRank;
+import me.vineer.clansapi.clan.player.ClanPlayer;
+import me.vineer.clansapi.clan.ranks.ClanRank;
 import me.vineer.clansapi.database.ClansController;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -18,6 +18,7 @@ public class ClanTabCompleter implements TabCompleter {
             completer.add("create");
             completer.add("request");
             completer.add("cancel-request");
+            if(sender.isOp()) completer.add("admin");
             ClanPlayer player = ClansController.getPlayer(sender.getName());
             if(player != null) {
                 if(player.getRank() == ClanRank.PRESIDENT || player.getRank() == ClanRank.VICE_PRESIDENT) {
@@ -26,6 +27,7 @@ public class ClanTabCompleter implements TabCompleter {
                 }
                 if(player.getRank() == ClanRank.PRESIDENT) {
                     completer.add("remove");
+                    completer.add("startwar");
                 }
                 completer.add("bank");
                 completer.add("leave");

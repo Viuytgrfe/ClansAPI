@@ -2,9 +2,9 @@ package me.vineer.clansapi.menu.custom;
 
 import me.vineer.clansapi.ClansAPI;
 import me.vineer.clansapi.PlayerMenuUtility;
-import me.vineer.clansapi.clans.Clan;
-import me.vineer.clansapi.clans.player.ClanPlayer;
-import me.vineer.clansapi.clans.ranks.ClanRank;
+import me.vineer.clansapi.clan.Clan;
+import me.vineer.clansapi.clan.player.ClanPlayer;
+import me.vineer.clansapi.clan.ranks.ClanRank;
 import me.vineer.clansapi.database.ClansController;
 import me.vineer.clansapi.menu.Menu;
 import me.vineer.clansapi.menu.custom.acceptMenu.AcceptMenu;
@@ -96,8 +96,7 @@ public class ClanMenu extends Menu {
             }).openWithText("Вы хотите удалить клан?");
         } else if (event.getCurrentItem().getType() == Material.PLAYER_HEAD && event.getCurrentItem().getItemMeta().getDisplayName().equals("§fБаза клана") && player.getRank().ordinal() < ClanRank.ELDER.ordinal()) {
             if(ClansController.getClanHome(clanName) != null) {
-                Audience audience = ClansAPI.getPlugin().adventure().sender(playerMenuUtility.getOwner());
-                ClansAPI.teleport(audience, playerMenuUtility.getOwner(), clan.getClanHome());
+                ClansAPI.teleport(playerMenuUtility.getOwner(), clan.getClanHome());
             } else {
                 event.getWhoClicked().sendMessage(ChatColor.YELLOW + "[CA] " + ChatColor.RED + "Точка дома клана не установлена!");
             }

@@ -1,8 +1,9 @@
-package me.vineer.clansapi.clans.player;
+package me.vineer.clansapi.clan.player;
 
-import me.vineer.clansapi.clans.ranks.ClanRank;
+import lombok.ToString;
+import me.vineer.clansapi.clan.ranks.ClanRank;
 import me.vineer.clansapi.database.ClansController;
-
+@ToString
 public class ClanPlayer {
     private final String playerName;
     private ClanRank rank;

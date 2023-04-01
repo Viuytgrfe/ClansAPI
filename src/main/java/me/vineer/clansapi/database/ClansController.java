@@ -1,18 +1,15 @@
 package me.vineer.clansapi.database;
 
-import com.sun.org.apache.bcel.internal.generic.IFNULL;
-import jdk.jfr.internal.test.WhiteBox;
 import me.vineer.clansapi.ClansAPI;
-import me.vineer.clansapi.clans.Clan;
-import me.vineer.clansapi.clans.player.ClanPlayer;
-import me.vineer.clansapi.clans.ranks.ClanRank;
+import me.vineer.clansapi.clan.Clan;
+import me.vineer.clansapi.clan.player.ClanPlayer;
+import me.vineer.clansapi.clan.ranks.ClanRank;
 import me.vineer.clansapi.heads.NickController;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import javax.xml.crypto.Data;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -252,6 +249,20 @@ public class ClansController {
             ps.setString(1, player);
             ResultSet rs = ps.executeQuery();
             return new ClanPlayer(rs.getString("Name"), ClanRank.getEnum(rs.getString("Rank")));
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static ClanPlayer getClanPresident(String clan) {
+        if(!isClan(clan)) return null;
+        try {
+            PreparedStatement ps = Database.getConnection().prepareStatement("SELECT Name FROM ClansPlayers WHERE Rank = ? AND ClanId = ?");
+            ps.setString(1, ClanRank.PRESIDENT.getName());
+            ps.setInt(2, getClanId(clan));
+            ResultSet rs = ps.executeQuery();
+            return new ClanPlayer(rs.getString("Name"), ClanRank.PRESIDENT);
         } catch (SQLException e) {
             e.printStackTrace();
             return null;

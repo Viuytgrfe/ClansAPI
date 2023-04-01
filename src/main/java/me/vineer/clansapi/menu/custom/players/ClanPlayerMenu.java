@@ -2,8 +2,8 @@ package me.vineer.clansapi.menu.custom.players;
 
 import me.vineer.clansapi.ClansAPI;
 import me.vineer.clansapi.PlayerMenuUtility;
-import me.vineer.clansapi.clans.player.ClanPlayer;
-import me.vineer.clansapi.clans.ranks.ClanRank;
+import me.vineer.clansapi.clan.player.ClanPlayer;
+import me.vineer.clansapi.clan.ranks.ClanRank;
 import me.vineer.clansapi.database.ClansController;
 import me.vineer.clansapi.heads.NickController;
 import me.vineer.clansapi.menu.Menu;
@@ -15,7 +15,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
 
 public class ClanPlayerMenu extends Menu {
 

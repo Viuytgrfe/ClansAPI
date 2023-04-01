@@ -1,7 +1,8 @@
-package me.vineer.clansapi.clans.ranks;
+package me.vineer.clansapi.clan.ranks;
 
-import me.vineer.economyapi.money.MoneyType;
+import lombok.ToString;
 
+@ToString
 public enum ClanRank {
     BEGINNER("beginner"),
     PLAYER("player"),

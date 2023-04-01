@@ -1,8 +1,8 @@
 package me.vineer.clansapi.listeners;
 
 import me.vineer.clansapi.ClansAPI;
-import me.vineer.clansapi.clans.Clan;
-import me.vineer.clansapi.clans.player.ClanPlayer;
+import me.vineer.clansapi.clan.Clan;
+import me.vineer.clansapi.clan.player.ClanPlayer;
 import me.vineer.clansapi.database.ClansController;
 import me.vineer.clansapi.heads.NickController;
 import org.bukkit.Bukkit;
@@ -11,8 +11,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-
-import java.awt.*;
 
 public class ChatListener implements Listener {
     @EventHandler
@@ -33,7 +31,6 @@ public class ChatListener implements Listener {
                         if(p == null) continue;
                         p.sendMessage(ChatColor.BLUE + "" + ChatColor.BOLD + "Клан " + ChatColor.WHITE + NickController.getTabNameFromNick(event.getPlayer().getName()) + net.md_5.bungee.api.ChatColor.of("#0088fd") +" ➤ " + ChatColor.GRAY + event.getMessage().substring(1));
                     }
-
                 }
             });
         }

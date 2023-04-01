@@ -1,8 +1,8 @@
 package me.vineer.clansapi.menu.custom.upgrade;
 
 import me.vineer.clansapi.PlayerMenuUtility;
-import me.vineer.clansapi.clans.Clan;
-import me.vineer.clansapi.clans.player.ClanPlayer;
+import me.vineer.clansapi.clan.Clan;
+import me.vineer.clansapi.clan.player.ClanPlayer;
 import me.vineer.clansapi.database.ClansController;
 import me.vineer.clansapi.menu.Menu;
 import me.vineer.clansapi.menu.items.GuiInventoryCreator;

@@ -1,7 +1,6 @@
 package me.vineer.clansapi;
 
 import org.bukkit.entity.Player;
-
 public class PlayerMenuUtility {
     private Player owner;
     private String playerFromRequest;

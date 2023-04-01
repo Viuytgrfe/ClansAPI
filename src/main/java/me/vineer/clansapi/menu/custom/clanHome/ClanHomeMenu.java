@@ -2,8 +2,8 @@ package me.vineer.clansapi.menu.custom.clanHome;
 
 import me.vineer.clansapi.ClansAPI;
 import me.vineer.clansapi.PlayerMenuUtility;
-import me.vineer.clansapi.clans.Clan;
-import me.vineer.clansapi.clans.player.ClanPlayer;
+import me.vineer.clansapi.clan.Clan;
+import me.vineer.clansapi.clan.player.ClanPlayer;
 import me.vineer.clansapi.database.ClansController;
 import me.vineer.clansapi.menu.Menu;
 import me.vineer.clansapi.menu.items.GuiInventoryCreator;
@@ -40,12 +40,11 @@ public class ClanHomeMenu extends Menu {
     public void handleMenu(InventoryClickEvent event) {
         if(event.getCurrentItem().getItemMeta().getDisplayName().equals(ChatColor.WHITE + "Точка дома клана")) {
             if(event.getCurrentItem().getItemMeta().getLore().get(1).equals(ChatColor.DARK_GRAY + "телепортироваться")) {
-                Audience audience = ClansAPI.getPlugin().adventure().sender(playerMenuUtility.getOwner());
                 event.getWhoClicked().closeInventory();
                 Location loc = clan.getClanHome();
                 loc.setX(loc.getBlockX() + 0.5);
                 loc.setZ(loc.getBlockZ() + 0.5);
-                ClansAPI.teleport(audience, playerMenuUtility.getOwner(), loc);
+                ClansAPI.teleport(playerMenuUtility.getOwner(), loc);
             } else {
                 Location loc = event.getWhoClicked().getLocation();
                 clan.setClanHome(loc);
