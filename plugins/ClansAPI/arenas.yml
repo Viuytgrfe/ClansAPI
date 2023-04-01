@@ -1,0 +1,15 @@
+world: "test"
+TEST:
+  schematic: "plugins/ClansAPI/schematics/test.schem"
+  name: "Тестовая арена"
+  canBreak:
+    - "STONE"
+    - "DIRT"
+  firstSpawn:
+    x: 0
+    y: 0
+    z: 0
+  secondSpawn:
+    x: 0
+    y: 0
+    z: 0

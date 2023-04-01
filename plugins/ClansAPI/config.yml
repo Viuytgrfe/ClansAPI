@@ -1,0 +1,39 @@
+clanPrice: 17000
+clanwarStartDelay: 1200
+clanwarRewards:
+  lvl1:
+    win:
+      money: 250
+      points: 10
+    lose:
+      money: 100
+      points: -5
+  lvl2:
+    win:
+      money: 500
+      points: 10
+    lose:
+      money: 200
+      points: -10
+  lvl3:
+    win:
+      money: 1000
+      points: 10
+    lose:
+      money: 400
+      points: -10
+  lvl4:
+    win:
+      money: 1700
+      points: 10
+    lose:
+      money: 700
+      points: -20
+  lvl5:
+    win:
+      money: 2300
+      points: 10
+    lose:
+      money: 1000
+      points: -20
+clanFight: false
